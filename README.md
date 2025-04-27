@@ -84,7 +84,7 @@
 ### Запуск с помощью Docker Compose
 1. Клонируйте репозиторий:
    ```
-   git clone https://github.com/yourusername/wallet.git
+   git clone https://github.com/thunderous-r/wallet.git
    ```
 
 2. Перейдите в директорию проекта:
@@ -108,30 +108,6 @@
    ```
    mvn spring-boot:run
    ```
-
-## Структура проекта
-```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/
-│   │       └── example/
-│   │           └── wallet/
-│   │               ├── WalletApplication.java
-│   │               ├── controller/
-│   │               ├── model/
-│   │               ├── repository/
-│   │               └── service/
-│   └── resources/
-│       ├── application.properties
-│       └── db/
-│           └── changelog/
-└── test/
-    └── java/
-        └── com/
-            └── example/
-                └── wallet/
-```
 
 ## Конфигурация
 Параметры приложения и базы данных можно настраивать через переменные окружения или файлы конфигурации без необходимости пересборки контейнеров. 
