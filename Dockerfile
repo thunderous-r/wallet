@@ -1,11 +1,14 @@
 FROM eclipse-temurin:17-jdk-alpine as build
 WORKDIR /workspace/app
 
+RUN apk add --no-cache dos2unix
+
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
+RUN dos2unix mvnw && chmod +x mvnw
 RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
