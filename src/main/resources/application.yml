@@ -3,12 +3,24 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/wallet}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+    open-in-view: false
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
@@ -18,4 +30,14 @@ server:
 app:
   wallet:
     initial-balance: ${INITIAL_BALANCE:0}
-    max-concurrent-operations: ${MAX_CONCURRENT_OPERATIONS:1000} 
+    max-concurrent-operations: ${MAX_CONCURRENT_OPERATIONS:1000}
+    retry:
+      max-attempts: ${MAX_RETRY_ATTEMPTS:5}
+      delay-ms: ${RETRY_DELAY_MS:200}
+      max-delay-ms: ${MAX_RETRY_DELAY_MS:1000}
+
+logging:
+  level:
+    com.example.wallet: DEBUG
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE 
