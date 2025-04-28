@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Wallet {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
@@ -21,8 +22,7 @@ public class Wallet {
     @Version
     private Long version;
 
-    public Wallet(UUID id, BigDecimal balance) {
-        this.id = id;
+    public Wallet(BigDecimal balance) {
         this.balance = balance;
     }
 } 

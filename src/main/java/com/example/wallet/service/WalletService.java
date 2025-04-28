@@ -21,26 +21,22 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class WalletService {
     private final WalletRepository walletRepository;
-    private final RetryService retryService;
 
     @Transactional
     public WalletResponse createWallet() {
-        UUID walletId = UUID.randomUUID();
-        Wallet wallet = new Wallet(walletId, BigDecimal.ZERO);
-        return WalletResponse.fromWallet(walletRepository.save(wallet));
+        Wallet wallet = new Wallet(BigDecimal.ZERO);
+        wallet = walletRepository.save(wallet);
+        return WalletResponse.fromWallet(wallet);
     }
 
     @Transactional
     public WalletResponse processOperation(WalletOperationRequest request) {
-        log.debug("Начало обработки операции для кошелька: {}", request.getWalletId());
+        log.info("Processing operation: {}", request);
         try {
-            return retryService.executeWithRetry(() -> performOperation(request));
-        } catch (ConcurrentOperationException e) {
-            log.warn("Не удалось обработать операцию после повторных попыток для кошелька: {}", request.getWalletId());
-            throw e;
+            return performOperation(request);
         } catch (Exception e) {
-            log.error("Неожиданная ошибка при обработке операции для кошелька: {}", request.getWalletId(), e);
-            throw new RuntimeException("Не удалось обработать операцию", e);
+            log.error("Error processing operation {}: {}", request, e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -69,7 +65,7 @@ public class WalletService {
             return WalletResponse.fromWallet(savedWallet);
         } catch (OptimisticLockException e) {
             log.debug("Обнаружен конфликт при обновлении кошелька: {}", request.getWalletId());
-            throw new ConcurrentOperationException("Обнаружена конкурентная операция, попробуйте еще раз");
+            throw new ConcurrentOperationException("Обнаружена конкурентная операция");
         }
     }
 

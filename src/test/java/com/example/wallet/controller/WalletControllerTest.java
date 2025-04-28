@@ -55,7 +55,7 @@ public class WalletControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Insufficient funds for withdrawal"));
+                .andExpect(jsonPath("$.error").value("Недостаточно средств для снятия"));
     }
 
     @Test
@@ -63,18 +63,28 @@ public class WalletControllerTest {
         UUID walletId = UUID.randomUUID();
         mockMvc.perform(get("/api/v1/wallets/" + walletId))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Wallet not found: " + walletId));
+                .andExpect(jsonPath("$.error").value("Кошелек не найден: " + walletId));
     }
 
     @Test
     public void testInvalidRequest() throws Exception {
+        // Тест с отсутствующими обязательными полями
         WalletOperationRequest request = new WalletOperationRequest();
-        // Missing required fields
 
         mockMvc.perform(post("/api/v1/wallet")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists());
+    }
+
+    @Test
+    public void testInvalidUUIDFormat() throws Exception {
+        // Тест с некорректным форматом UUID
+        mockMvc.perform(post("/api/v1/wallet")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"walletId\":\"1\",\"operationType\":\"DEPOSIT\",\"amount\":1000}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Некорректный формат UUID"));
     }
 } 
